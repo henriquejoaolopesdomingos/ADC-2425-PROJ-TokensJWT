@@ -5,20 +5,20 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 import pt.unl.fct.di.apdc.firstwebapp.util.LoginData;
-import pt.unl.fct.di.apdc.firstwebapp.Authentication.SignatureUtils;
+import pt.unl.fct.di.apdc.firstwebapp.authentication.SignatureUtils;
 import pt.unl.fct.di.apdc.firstwebapp.util.UserData;
 
 import com.google.gson.Gson;
@@ -62,7 +62,15 @@ public class LoginResource {
 		}
 		
 		String value =  fields + "." + signature;
-		NewCookie cookie = new NewCookie("session::apdc", value, "/", null, "comment", 1000*60*60*2, false, true);
+		NewCookie cookie = new NewCookie.Builder("session::apdc")
+		        .value(value)
+		        .path("/")
+		        .comment("comment")
+		        .maxAge(1000 * 60 * 60 * 2)
+		        .secure(false)
+		        .httpOnly(true)
+		        .build();
+
 		
 		return Response.ok().cookie(cookie).build();
 	}
@@ -90,11 +98,9 @@ public class LoginResource {
 		}
 		
 		if(System.currentTimeMillis() > (Long.valueOf(values[3]) + Long.valueOf(values[4])*1000)) {
-			
 			return false;
 		}
-		
-			
+
 		return true;
 	}
 	

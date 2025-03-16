@@ -1,4 +1,4 @@
-package pt.unl.fct.di.apdc.firstwebapp.Authentication;
+package pt.unl.fct.di.apdc.firstwebapp.authentication;
 
 import java.util.Base64;
 import java.util.logging.Logger;
