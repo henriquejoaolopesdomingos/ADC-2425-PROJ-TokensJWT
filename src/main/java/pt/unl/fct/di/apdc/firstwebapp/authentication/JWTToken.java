@@ -2,6 +2,7 @@ package pt.unl.fct.di.apdc.firstwebapp.authentication;
 
 import pt.unl.fct.di.apdc.firstwebapp.util.JWTConfig;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
@@ -26,10 +27,9 @@ public class JWTToken {
 
     public static boolean validateJWT(String token) {
         try {
-            DecodedJWT decoded = JWT.decode(token);
-
             Algorithm algorithm = JWTConfig.getJWTAlgorithm();
-            algorithm.verify(decoded);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT decoded = verifier.verify(token);
 
             // Manually check expiration
             Date expiresAt = decoded.getExpiresAt();
@@ -49,9 +49,10 @@ public class JWTToken {
 
     public static DecodedJWT extractJWT(String token) {
         try {
-            DecodedJWT decoded = JWT.decode(token);
             Algorithm algorithm = JWTConfig.getJWTAlgorithm();
-            algorithm.verify(decoded);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT decoded = verifier.verify(token);
+
             return decoded;
         } catch (Exception e) {
             return null;
