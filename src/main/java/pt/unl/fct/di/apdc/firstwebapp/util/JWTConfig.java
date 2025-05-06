@@ -16,7 +16,7 @@ public class JWTConfig {
     }
 
     // === CONFIGURATION ===
-    public static final AlgorithmType ALGORITHM = AlgorithmType.ES256;
+    public static final AlgorithmType ALGORITHM = AlgorithmType.HS256;
     public static final String HMAC_SECRET = "change-me-to-a-secure-random-string";
     public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 2; // 2 hours
 
