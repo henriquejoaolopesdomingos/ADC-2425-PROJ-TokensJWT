@@ -2,27 +2,38 @@ package pt.unl.fct.di.apdc.firstwebapp.authentication;
 
 import pt.unl.fct.di.apdc.firstwebapp.util.JWTConfig;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
+import java.util.Map;
 import java.util.Date;
 
 public class JWTToken {
 
-    public static String createJWT(String username, String role) {
+    public static String createJWT(String username, Map<String, Object> fields) {
         Algorithm algorithm = JWTConfig.getJWTAlgorithm();
         long now = System.currentTimeMillis();
         long expires = now + JWTConfig.EXPIRATION_TIME;
 
-        return JWT.create()
-                .withSubject(username)
-                .withClaim("role", role)
-                .withIssuedAt(new Date(now))
-                .withExpiresAt(new Date(expires))
-                .sign(algorithm);
+        JWTCreator.Builder jwtBuilder = JWT.create()
+            .withSubject(username)
+            .withIssuedAt(new Date(now))
+            .withExpiresAt(new Date(expires));
+        
+        if (fields != null) {
+            for (Map.Entry<String, Object> entry : fields.entrySet()) {
+                Object value = entry.getValue();
+                try {
+                    jwtBuilder.withClaim(entry.getKey(), value.toString());
+                } catch (Exception e) {
+                    System.out.println("Failed to add claim for key: " + entry.getKey() + " due to error: " + e.getMessage());
+                }
+            }
+        }
+        return jwtBuilder.sign(algorithm);
     }
 
     public static boolean validateJWT(String token) {

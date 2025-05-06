@@ -57,8 +57,12 @@ public class LoginResource {
 			role = ADMIN;
 		}
 		
+        Map<String, Object> fields = new HashMap<>();
+        // Substitute the following fields with the ones that could make sense for your project
+        fields.put("role", role);
+        fields.put("email", "user@example.com");
 		
-		String token = JWTToken.createJWT(data.username, role);
+		String token = JWTToken.createJWT(data.username, fields);
         if (token == null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to create JWT.").build();
         }
